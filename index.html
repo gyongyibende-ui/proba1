@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Diákcsoport Véletlensorsolás</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+    textarea, input, button { margin: 10px 0; width: 100%; padding: 8px; }
+    .output { background: #fff; padding: 10px; border: 1px solid #ccc; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Diákcsoport Véletlensorsolás</h1>
+
+  <label for="names">Írd be a diákok nevét (soronként):</label>
+  <textarea id="names" rows="10" placeholder="Anna\nBéla\nCsaba\n..."></textarea>
+
+  <button onclick="shuffleNames()">1️⃣ Véletlen sorrend</button>
+  <button onclick="groupNames()">2️⃣ Véletlen csoportok</button>
+  <input type="number" id="groupSize" placeholder="Csoportméret (pl. 3)">
+  <button onclick="pickOne()">3️⃣ Egy tanuló kisorsolása</button>
+
+  <div class="output" id="result"></div>
+
+  <script>
+    function getNames() {
+      return document.getElementById('names').value
+        .split('\n')
+        .map(name => name.trim())
+        .filter(name => name);
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function shuffleNames() {
+      const names = getNames();
+      const shuffled = shuffle([...names]);
+      document.getElementById('result').innerHTML = `<strong>Véletlen sorrend:</strong><br>${shuffled.join('<br>')}`;
+    }
+
+    function groupNames() {
+      const names = shuffle(getNames());
+      const size = parseInt(document.getElementById('groupSize').value);
+      if (!size || size < 1) {
+        alert('Adj meg egy érvényes csoportméretet!');
+        return;
+      }
+      const groups = [];
+      for (let i = 0; i < names.length; i += size) {
+        groups.push(names.slice(i, i + size));
+      }
+      let html = '<strong>Véletlen csoportok:</strong><br>';
+      groups.forEach((group, index) => {
+        html += `Csoport ${index + 1}: ${group.join(', ')}<br>`;
+      });
+      document.getElementById('result').innerHTML = html;
+    }
+
+    function pickOne() {
+      const names = getNames();
+      if (names.length === 0) {
+        alert('Nincs megadott név!');
+        return;
+      }
+      const chosen = names[Math.floor(Math.random() * names.length)];
+      document.getElementById('result').innerHTML = `<strong>Kisorsolt tanuló:</strong> ${chosen}`;
+    }
+  </script>
+</body>
+</html>
